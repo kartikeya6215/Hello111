@@ -10,19 +10,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-        :root { --primary: 59 130 246; }
         body { font-family: 'Inter', system-ui, sans-serif; }
         .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); }
         .dark .glass { background: rgba(17,24,39,0.95); }
-        .nav-active { border-bottom: 3px solid rgb(var(--primary)); color: rgb(var(--primary)); font-weight: 600; }
+        .nav-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; font-weight: 600; }
         .amount-positive { color: #10b981; }
         .amount-negative { color: #ef4444; }
-        .transaction-item:hover { transform: translateX(6px); }
-        canvas { max-width: 100% !important; height: auto !important; }
+        .tx-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tx-card:hover { transform: translateX(4px); }
     </style>
 </head>
-<body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen pb-24">
-    <div class="max-w-lg mx-auto bg-white dark:bg-zinc-900 min-h-screen shadow-2xl overflow-hidden">
+<body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen pb-20">
+    <div class="max-w-lg mx-auto bg-white dark:bg-zinc-900 min-h-screen shadow-xl overflow-hidden">
 
         <!-- HEADER -->
         <header class="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
@@ -35,29 +34,23 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="showCalculator()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <button onclick="showCalculator()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800">
                         <i class="fas fa-calculator text-xl"></i>
                     </button>
-                    <button onclick="toggleTheme()" id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800">
                         <i id="theme-icon" class="fas fa-moon text-xl"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Balance Card -->
+            <!-- BALANCE -->
             <div class="px-6 pb-6">
-                <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 text-center shadow-inner">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400 tracking-widest">CURRENT BALANCE</p>
-                    <div id="balance" class="text-5xl font-semibold tracking-tighter mt-2 mb-1">₹0.00</div>
-                    <div class="flex justify-center gap-8 mt-4">
-                        <div class="text-center">
-                            <div class="text-emerald-500 text-sm">INCOME</div>
-                            <div id="total-income" class="font-semibold text-emerald-600">₹0</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-red-500 text-sm">EXPENSE</div>
-                            <div id="total-expense" class="font-semibold text-red-600">₹0</div>
-                        </div>
+                <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 text-center">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">CURRENT BALANCE</p>
+                    <div id="balance" class="text-5xl font-semibold tracking-tighter mt-1">₹0.00</div>
+                    <div class="flex justify-center gap-8 mt-4 text-sm">
+                        <div><span class="text-emerald-500">↑</span> <span id="total-income" class="font-semibold">₹0</span></div>
+                        <div><span class="text-red-500">↓</span> <span id="total-expense" class="font-semibold">₹0</span></div>
                     </div>
                 </div>
             </div>
@@ -65,32 +58,24 @@
 
         <!-- NAV -->
         <nav class="flex bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-[172px] z-40">
-            <button onclick="switchTab(0)" id="tab-0" class="nav-active flex-1 py-4 text-sm flex flex-col items-center gap-1">
-                <i class="fas fa-home"></i> <span>Home</span>
-            </button>
-            <button onclick="switchTab(1)" id="tab-1" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500">
-                <i class="fas fa-list"></i> <span>History</span>
-            </button>
-            <button onclick="switchTab(2)" id="tab-2" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500">
-                <i class="fas fa-plus"></i> <span>Add</span>
-            </button>
-            <button onclick="switchTab(3)" id="tab-3" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500">
-                <i class="fas fa-chart-pie"></i> <span>Analytics</span>
-            </button>
+            <button onclick="switchTab(0)" id="tab-0" class="nav-active flex-1 py-4 text-sm flex flex-col items-center gap-1"><i class="fas fa-home"></i> <span>Home</span></button>
+            <button onclick="switchTab(1)" id="tab-1" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500"><i class="fas fa-list"></i> <span>History</span></button>
+            <button onclick="switchTab(2)" id="tab-2" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500"><i class="fas fa-plus"></i> <span>Add</span></button>
+            <button onclick="switchTab(3)" id="tab-3" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500"><i class="fas fa-chart-pie"></i> <span>Analytics</span></button>
         </nav>
 
         <main class="p-6">
             <!-- HOME -->
             <div id="content-0" class="tab-content">
-                <h2 class="font-semibold mb-4 flex items-center gap-2"><i class="fas fa-clock"></i> Recent</h2>
+                <h2 class="font-semibold mb-4">Recent Activity</h2>
                 <div id="recent-list" class="space-y-3"></div>
             </div>
 
             <!-- HISTORY -->
             <div id="content-1" class="tab-content hidden">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex justify-between items-center mb-4">
                     <h2 class="font-semibold">All Transactions</h2>
-                    <button onclick="exportToExcel()" class="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-2xl transition-colors">
+                    <button onclick="exportToExcel()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-2xl flex items-center gap-2">
                         <i class="fas fa-download"></i> Excel
                     </button>
                 </div>
@@ -100,8 +85,8 @@
             <!-- ADD -->
             <div id="content-2" class="tab-content hidden">
                 <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-8">
-                    <h2 class="font-semibold text-xl mb-6 text-center">New Entry</h2>
-                    
+                    <h2 class="font-semibold text-xl mb-6 text-center">New Transaction</h2>
+
                     <div class="flex rounded-3xl bg-zinc-100 dark:bg-zinc-800 p-1 mb-8">
                         <button onclick="setType('expense')" id="btn-expense" class="flex-1 py-3.5 rounded-3xl font-medium text-red-600 bg-white shadow">Expense</button>
                         <button onclick="setType('income')" id="btn-income" class="flex-1 py-3.5 rounded-3xl font-medium text-emerald-600">Income</button>
@@ -109,7 +94,7 @@
 
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-sm mb-2 text-zinc-500">Amount</label>
+                            <label class="block text-sm mb-2 text-zinc-500">Amount (₹)</label>
                             <div class="relative">
                                 <span class="absolute left-6 top-4 text-3xl text-zinc-400">₹</span>
                                 <input id="amount" type="number" step="0.01" placeholder="0.00" class="w-full pl-14 py-5 text-4xl font-semibold bg-zinc-100 dark:bg-zinc-800 rounded-3xl focus:outline-none">
@@ -118,7 +103,7 @@
 
                         <div>
                             <label class="block text-sm mb-2 text-zinc-500">Description</label>
-                            <input id="description" type="text" placeholder="What was this?" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
+                            <input id="description" type="text" placeholder="What was this for?" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -126,13 +111,13 @@
                                 <label class="block text-sm mb-2 text-zinc-500">Date</label>
                                 <input id="date" type="date" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
                             </div>
-                            <div id="cat-container">
+                            <div id="cat-group">
                                 <label class="block text-sm mb-2 text-zinc-500">Category</label>
                                 <select id="category" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
                                     <option value="Food">Food & Drink</option>
                                     <option value="Transport">Transport</option>
                                     <option value="Shopping">Shopping</option>
-                                    <option value="Bills">Bills</option>
+                                    <option value="Bills">Bills & Utilities</option>
                                     <option value="Health">Health</option>
                                     <option value="Entertainment">Entertainment</option>
                                     <option value="Other">Other</option>
@@ -140,8 +125,13 @@
                             </div>
                         </div>
 
-                        <button onclick="addTransaction()" class="w-full mt-6 py-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-3xl transition-colors">
-                            Save Entry
+                        <div id="payer-group" class="hidden">
+                            <label class="block text-sm mb-2 text-zinc-500">Paid By (Name)</label>
+                            <input id="payer" type="text" placeholder="Person / Company name" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
+                        </div>
+
+                        <button onclick="addTransaction()" class="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-3xl transition-colors">
+                            Save Transaction
                         </button>
                     </div>
                 </div>
@@ -150,31 +140,33 @@
             <!-- ANALYTICS -->
             <div id="content-3" class="tab-content hidden">
                 <h2 class="font-semibold mb-6">Analytics</h2>
-                
+
                 <div class="glass rounded-3xl p-6 mb-8">
-                    <h3 class="text-sm font-medium mb-4">This Week</h3>
-                    <div id="week-summary" class="grid grid-cols-2 gap-4"></div>
-                    <canvas id="week-chart" class="mt-6" height="150"></canvas>
+                    <h3 class="text-sm font-medium mb-4">This Week Overview</h3>
+                    <div id="week-summary" class="grid grid-cols-2 gap-4 mb-6"></div>
+                    <canvas id="week-chart" height="150"></canvas>
                 </div>
 
                 <div class="glass rounded-3xl p-6">
                     <h3 class="text-sm font-medium mb-4">Spending by Category</h3>
-                    <div class="flex justify-center">
-                        <canvas id="pie-chart" height="240"></canvas>
-                    </div>
+                    <canvas id="pie-chart" height="240"></canvas>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- FAB -->
-    <button onclick="switchTab(2)" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-4xl shadow-2xl z-50 active:scale-95 transition-transform">
+    <button onclick="switchTab(2)" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-4xl shadow-2xl z-50 active:scale-95">
         <i class="fas fa-plus"></i>
     </button>
 
-    <!-- CALCULATOR -->
-    <div id="calc-modal" class="hidden fixed inset-0 bg-black/70 z-[999] flex items-end justify-center pb-10">
-        <div class="glass w-full max-w-sm mx-4 rounded-3xl p-6">
+    <!-- CALCULATOR MODAL -->
+    <div id="calc-modal" class="hidden fixed inset-0 bg-black/70 z-[999] flex items-center justify-center">
+        <div class="glass w-full max-w-xs mx-4 rounded-3xl p-6">
+            <div class="flex justify-between mb-6">
+                <h3 class="font-semibold">Quick Calculator</h3>
+                <button onclick="hideCalculator()" class="text-xl text-zinc-400">×</button>
+            </div>
             <input id="calc-display" readonly class="w-full text-right text-5xl font-light bg-transparent focus:outline-none mb-8">
             <div class="grid grid-cols-4 gap-3 text-2xl">
                 <button onclick="calcInput('C')" class="py-6 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-2xl font-medium">C</button>
@@ -197,16 +189,15 @@
                 <button onclick="calcInput('.')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">.</button>
                 <button onclick="calcEquals()" class="py-6 bg-blue-600 text-white rounded-2xl">=</button>
             </div>
-            <button onclick="hideCalculator()" class="mt-8 w-full py-4 text-zinc-500 font-medium">Close Calculator</button>
         </div>
     </div>
 
     <script>
-        let transactions = JSON.parse(localStorage.getItem('flowtrack_txns')) || [];
+        let transactions = JSON.parse(localStorage.getItem('flowtrack_data')) || [];
         let currentType = 'expense';
         let isDark = localStorage.getItem('darkMode') === 'true';
-        let pieChartInstance = null;
-        let weekChartInstance = null;
+        let pieChart = null;
+        let weekChart = null;
 
         function toggleTheme() {
             isDark = !isDark;
@@ -216,25 +207,25 @@
             document.getElementById('theme-icon').classList.toggle('fa-sun', isDark);
         }
 
-        function saveTransactions() {
-            localStorage.setItem('flowtrack_txns', JSON.stringify(transactions));
+        function saveData() {
+            localStorage.setItem('flowtrack_data', JSON.stringify(transactions));
         }
 
         function calculateBalance() {
-            let income = 0, expense = 0;
+            let inc = 0, exp = 0;
             transactions.forEach(t => {
-                if (t.type === 'income') income += Number(t.amount);
-                else expense += Number(t.amount);
+                if (t.type === 'income') inc += Number(t.amount);
+                else exp += Number(t.amount);
             });
-            document.getElementById('balance').textContent = '₹' + (income - expense).toFixed(2);
-            document.getElementById('total-income').textContent = '₹' + income.toFixed(0);
-            document.getElementById('total-expense').textContent = '₹' + expense.toFixed(0);
+            document.getElementById('balance').textContent = '₹' + (inc - exp).toFixed(2);
+            document.getElementById('total-income').textContent = '₹' + inc.toFixed(0);
+            document.getElementById('total-expense').textContent = '₹' + exp.toFixed(0);
         }
 
         function deleteTransaction(id) {
-            if (confirm("Delete this transaction permanently?")) {
+            if (confirm("Delete this transaction?")) {
                 transactions = transactions.filter(t => t.id !== id);
-                saveTransactions();
+                saveData();
                 refreshAll();
             }
         }
@@ -242,28 +233,28 @@
         function renderRecent() {
             const container = document.getElementById('recent-list');
             container.innerHTML = '';
-            const sorted = [...transactions].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
+            const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
             if (sorted.length === 0) {
-                container.innerHTML = `<div class="text-center py-16 text-zinc-400">No entries yet.<br>Tap the + button</div>`;
+                container.innerHTML = `<div class="text-center py-16 text-zinc-400">No transactions yet.<br>Tap the + button to start.</div>`;
                 return;
             }
             sorted.forEach(t => {
-                const isIncome = t.type === 'income';
+                const isInc = t.type === 'income';
                 const div = document.createElement('div');
-                div.className = `transaction-item flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-5`;
+                div.className = `tx-card flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-5`;
                 div.innerHTML = `
                     <div class="flex gap-4 items-center">
-                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
-                            <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
+                            <i class="fas ${isInc ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
                         <div>
                             <div class="font-medium">${t.description}</div>
-                            <div class="text-xs text-zinc-500">${new Date(t.date).toLocaleDateString('en-IN', {month:'short', day:'numeric'})}</div>
+                            <div class="text-xs text-zinc-500">${new Date(t.date).toLocaleDateString('en-IN')}</div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold text-lg">
-                            \( {isIncome ? '+' : '-'}₹ \){Number(t.amount).toFixed(2)}
+                        <div class="${isInc ? 'amount-positive' : 'amount-negative'} font-semibold text-lg">
+                            \( {isInc ? '+' : '-'}₹ \){Number(t.amount).toFixed(2)}
                         </div>
                         <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-red-400 hover:text-red-600 text-xs mt-1">delete</button>
                     </div>
@@ -279,15 +270,15 @@
                 container.innerHTML = `<div class="text-center py-20 text-zinc-400">No transactions yet</div>`;
                 return;
             }
-            const sorted = [...transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
+            const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
             sorted.forEach(t => {
-                const isIncome = t.type === 'income';
+                const isInc = t.type === 'income';
                 const div = document.createElement('div');
-                div.className = `transaction-item flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-5`;
+                div.className = `tx-card flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-5`;
                 div.innerHTML = `
                     <div class="flex gap-4 items-center flex-1">
-                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
-                            <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
+                            <i class="fas ${isInc ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
                         <div class="flex-1">
                             <div class="font-medium">${t.description}</div>
@@ -295,8 +286,8 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold text-lg">
-                            \( {isIncome ? '+' : '-'}₹ \){Number(t.amount).toFixed(2)}
+                        <div class="${isInc ? 'amount-positive' : 'amount-negative'} font-semibold text-lg">
+                            \( {isInc ? '+' : '-'}₹ \){Number(t.amount).toFixed(2)}
                         </div>
                         <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-red-400 hover:text-red-600 text-xs mt-1">delete</button>
                     </div>
@@ -309,6 +300,8 @@
             currentType = type;
             document.getElementById('btn-expense').classList.toggle('bg-white', type === 'expense');
             document.getElementById('btn-income').classList.toggle('bg-white', type === 'income');
+            document.getElementById('payer-group').classList.toggle('hidden', type !== 'income');
+            document.getElementById('cat-group').classList.toggle('hidden', type !== 'expense');
         }
 
         function addTransaction() {
@@ -319,19 +312,22 @@
                 alert("Please fill Amount, Description and Date");
                 return;
             }
-            transactions.push({
+            const tx = {
                 id: Date.now(),
                 type: currentType,
                 amount: amount,
                 description: description,
                 date: date,
-                category: document.getElementById('category').value
-            });
-            saveTransactions();
+                category: document.getElementById('category').value,
+                payer: currentType === 'income' ? document.getElementById('payer').value.trim() : null
+            };
+            transactions.push(tx);
+            saveData();
             refreshAll();
             document.getElementById('amount').value = '';
             document.getElementById('description').value = '';
-            alert(currentType === 'income' ? "Income added successfully" : "Expense added successfully");
+            document.getElementById('payer').value = '';
+            alert(currentType === 'income' ? "Income added successfully!" : "Expense added successfully!");
             switchTab(1);
         }
 
@@ -345,22 +341,23 @@
                 Type: t.type.toUpperCase(),
                 Description: t.description,
                 Amount: Number(t.amount),
-                Category: t.category || ''
+                Category: t.category || '',
+                Payer: t.payer || ''
             }));
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(data);
             const inc = transactions.filter(t => t.type === 'income').reduce((a, t) => a + Number(t.amount), 0);
             const exp = transactions.filter(t => t.type === 'expense').reduce((a, t) => a + Number(t.amount), 0);
             XLSX.utils.sheet_add_aoa(ws, [
-                ["SUMMARY","","","",""],
-                ["Total Income","","",inc,""],
-                ["Total Expense","","",exp,""],
-                ["Net Balance","","",(inc - exp),""],
-                ["Generated on","","",new Date().toLocaleString('en-IN'),""]
-            ], {origin: -1});
+                ["SUMMARY", "", "", "", "", ""],
+                ["Total Income", "", "", inc.toFixed(2), "", ""],
+                ["Total Expense", "", "", exp.toFixed(2), "", ""],
+                ["Net Balance", "", "", (inc - exp).toFixed(2), "", ""],
+                ["Generated on", "", "", new Date().toLocaleString('en-IN'), "", ""]
+            ], { origin: -1 });
             XLSX.utils.book_append_sheet(wb, ws, "FlowTrack");
             XLSX.writeFile(wb, `FlowTrack_Statement_${new Date().toISOString().slice(0,10)}.xlsx`);
-            alert("Excel file downloaded");
+            alert("Excel file downloaded successfully!");
         }
 
         function refreshAll() {
@@ -373,40 +370,40 @@
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.getElementById('content-' + tab).classList.remove('hidden');
             document.querySelectorAll('nav button').forEach((b, i) => b.classList.toggle('nav-active', i === tab));
-            if (tab === 3) {
-                setTimeout(() => renderAnalytics(), 50);
-            }
+            if (tab === 3) setTimeout(renderAnalytics, 80);
         }
 
         function renderAnalytics() {
             // Week summary
             const weekDiv = document.getElementById('week-summary');
-            weekDiv.innerHTML = `<div class="text-center text-zinc-400">Weekly chart coming soon</div>`;
-            
-            // Pie chart
-            if (pieChartInstance) pieChartInstance.destroy();
+            weekDiv.innerHTML = `
+                <div class="glass rounded-2xl p-4 text-center"><div class="text-emerald-500 text-sm">Income</div><div class="text-2xl font-semibold">₹0</div></div>
+                <div class="glass rounded-2xl p-4 text-center"><div class="text-red-500 text-sm">Expense</div><div class="text-2xl font-semibold">₹0</div></div>
+            `;
+
+            // Pie Chart
+            if (pieChart) pieChart.destroy();
             const expenseByCat = {};
             transactions.filter(t => t.type === 'expense').forEach(t => {
                 const cat = t.category || 'Other';
                 expenseByCat[cat] = (expenseByCat[cat] || 0) + Number(t.amount);
             });
-            const ctx = document.createElement('canvas');
-            document.getElementById('pie-chart').parentElement.appendChild(ctx);
-            pieChartInstance = new Chart(ctx, {
+            const ctx = document.getElementById('pie-chart');
+            pieChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(expenseByCat),
-                    datasets: [{ data: Object.values(expenseByCat), backgroundColor: ['#ef4444','#f59e0b','#eab308','#22c55e','#3b82f6'] }]
+                    datasets: [{ data: Object.values(expenseByCat), backgroundColor: ['#ef4444', '#f59e0b', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'] }]
                 },
                 options: { cutout: '65%', plugins: { legend: { position: 'bottom' } } }
             });
         }
 
         // Calculator
-        let calcExpression = '';
+        let calcExpr = '';
         function showCalculator() {
             document.getElementById('calc-modal').classList.remove('hidden');
-            calcExpression = '';
+            calcExpr = '';
             document.getElementById('calc-display').value = '0';
         }
         function hideCalculator() {
@@ -414,29 +411,27 @@
         }
         function calcInput(val) {
             const disp = document.getElementById('calc-display');
-            if (val === 'C') {
-                calcExpression = '';
-                disp.value = '0';
-                return;
-            }
-            calcExpression += val;
-            disp.value = calcExpression;
+            if (val === 'C') { calcExpr = ''; disp.value = '0'; return; }
+            calcExpr += val;
+            disp.value = calcExpr;
         }
         function calcEquals() {
             try {
-                let result = eval(calcExpression.replace('×','*').replace('÷','/'));
+                let result = eval(calcExpr.replace('×', '*').replace('÷', '/'));
                 document.getElementById('calc-display').value = result;
-                calcExpression = result.toString();
+                calcExpr = result.toString();
             } catch(e) {
                 document.getElementById('calc-display').value = 'Error';
             }
         }
 
         function init() {
-            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
             document.documentElement.classList.toggle('dark', isDark);
             document.getElementById('theme-icon').classList.toggle('fa-moon', !isDark);
             document.getElementById('theme-icon').classList.toggle('fa-sun', isDark);
+            setType('expense');
             refreshAll();
             switchTab(0);
         }
