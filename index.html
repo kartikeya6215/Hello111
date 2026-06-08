@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowTrack • Minimal</title>
+    <title>FlowTrack • Rupee</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -37,16 +37,8 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .transaction-item:hover {
-            transform: translateX(4px);
-        }
-        
         .amount-positive { color: #10b981; }
         .amount-negative { color: #ef4444; }
-        
-        .modal {
-            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
         
         @keyframes modalPop {
             from { opacity: 0; transform: scale(0.8) translateY(40px); }
@@ -62,19 +54,19 @@
         <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50">
             <div class="px-6 py-5 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl">F</div>
+                    <div class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl">₹</div>
                     <div>
                         <h1 class="text-2xl font-semibold tracking-tight">FlowTrack</h1>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 -mt-1">minimal expense tracker</p>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 -mt-1">Expense Tracker</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
                     <button onclick="showCalculator()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
                         <i class="fas fa-calculator text-lg"></i>
                     </button>
-                    <div onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                    <button onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
                         <i id="theme-icon" class="fas fa-moon text-lg"></i>
-                    </div>
+                    </button>
                 </div>
             </div>
             
@@ -82,15 +74,15 @@
             <div class="px-6 pb-6">
                 <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 text-center">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">Current Balance</p>
-                    <div id="balance" class="text-5xl font-semibold tracking-tighter mt-1 mb-1">$2,847.32</div>
+                    <div id="balance" class="text-5xl font-semibold tracking-tighter mt-1 mb-1">₹2,847.32</div>
                     <div class="flex justify-center gap-6 text-sm">
                         <div class="flex items-center gap-1.5">
                             <span class="text-emerald-500">↑</span>
-                            <span id="total-income" class="font-medium text-emerald-600">$4,120</span>
+                            <span id="total-income" class="font-medium text-emerald-600">₹4,120</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <span class="text-red-500">↓</span>
-                            <span id="total-expense" class="font-medium text-red-600">$1,273</span>
+                            <span id="total-expense" class="font-medium text-red-600">₹1,273</span>
                         </div>
                     </div>
                 </div>
@@ -127,11 +119,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-5">
                         <div class="text-emerald-600 text-sm font-medium">This Month Income</div>
-                        <div id="month-income" class="text-3xl font-semibold mt-2">$3,240</div>
+                        <div id="month-income" class="text-3xl font-semibold mt-2">₹3,240</div>
                     </div>
                     <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-5">
                         <div class="text-red-600 text-sm font-medium">This Month Spent</div>
-                        <div id="month-expense" class="text-3xl font-semibold mt-2">$892</div>
+                        <div id="month-expense" class="text-3xl font-semibold mt-2">₹892</div>
                     </div>
                 </div>
             </div>
@@ -151,7 +143,6 @@
                         </button>
                     </div>
                 </div>
-                
                 <div id="transactions-list" class="space-y-3 max-h-[520px] overflow-y-auto pr-2"></div>
             </div>
             
@@ -167,9 +158,9 @@
                     
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-sm text-zinc-500 mb-1.5">Amount</label>
+                            <label class="block text-sm text-zinc-500 mb-1.5">Amount (₹)</label>
                             <div class="relative">
-                                <span class="absolute left-5 top-4 text-2xl font-light text-zinc-400">$</span>
+                                <span class="absolute left-5 top-4 text-2xl font-light text-zinc-400">₹</span>
                                 <input id="amount" type="number" step="0.01" placeholder="0.00" class="w-full pl-12 pr-6 py-4 bg-zinc-100 dark:bg-zinc-800 rounded-3xl text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
@@ -214,7 +205,6 @@
             <div id="content-3" class="tab-content hidden">
                 <h2 class="font-semibold mb-6">Analytics & Reports</h2>
                 
-                <!-- Week-wise -->
                 <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 mb-8">
                     <div class="flex justify-between mb-5">
                         <h3 class="font-medium">This Week Overview</h3>
@@ -224,7 +214,6 @@
                     <canvas id="week-chart" class="mt-6" height="140"></canvas>
                 </div>
                 
-                <!-- Pie Chart -->
                 <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 mb-8">
                     <h3 class="font-medium mb-4">Spending by Category</h3>
                     <div class="flex justify-center">
@@ -247,7 +236,7 @@
 
     <!-- CALCULATOR MODAL -->
     <div id="calc-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-        <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl w-full max-w-xs mx-4 p-6 modal">
+        <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl w-full max-w-xs mx-4 p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="font-semibold">Quick Calculator</h3>
                 <button onclick="hideCalculator()" class="text-zinc-400 hover:text-zinc-600"><i class="fas fa-times"></i></button>
@@ -300,8 +289,13 @@
             isDark = !isDark;
             localStorage.setItem('darkMode', isDark);
             document.documentElement.classList.toggle('dark', isDark);
-            document.getElementById('theme-icon').classList.toggle('fa-moon', !isDark);
-            document.getElementById('theme-icon').classList.toggle('fa-sun', isDark);
+            updateThemeIcon();
+        }
+        
+        function updateThemeIcon() {
+            const icon = document.getElementById('theme-icon');
+            icon.classList.toggle('fa-moon', !isDark);
+            icon.classList.toggle('fa-sun', isDark);
         }
         
         function saveTransactions() {
@@ -310,24 +304,23 @@
         
         function formatDate(dateStr) {
             const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
         }
         
         function formatFullDateTime() {
-            const now = new Date();
-            return now.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+            return new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
         }
         
         function calculateBalance() {
             let income = 0, expense = 0;
             transactions.forEach(t => {
-                if (t.type === 'income') income += parseFloat(t.amount);
-                else expense += parseFloat(t.amount);
+                if (t.type === 'income') income += parseFloat(t.amount || 0);
+                else expense += parseFloat(t.amount || 0);
             });
             const balance = income - expense;
-            document.getElementById('balance').textContent = '$' + balance.toFixed(2);
-            document.getElementById('total-income').textContent = '$' + income.toFixed(0);
-            document.getElementById('total-expense').textContent = '$' + expense.toFixed(0);
+            document.getElementById('balance').textContent = '₹' + balance.toFixed(2);
+            document.getElementById('total-income').textContent = '₹' + income.toFixed(0);
+            document.getElementById('total-expense').textContent = '₹' + expense.toFixed(0);
             return { income, expense, balance };
         }
         
@@ -356,7 +349,7 @@
                 const isIncome = t.type === 'income';
                 div.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
+                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900' : 'bg-red-100 text-red-600 dark:bg-red-900'}">
                             <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
                         <div>
@@ -367,11 +360,10 @@
                     <div class="text-right flex items-center gap-3">
                         <div>
                             <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold">
-                                ${isIncome ? '+' : '-'}\[ {parseFloat(t.amount).toFixed(2)}
+                                \( {isIncome ? '+' : '-'}₹ \){parseFloat(t.amount).toFixed(2)}
                             </div>
-                            \( {t.payer ? `<div class="text-xs text-emerald-600"> \){t.payer}</div>` : ''}
                         </div>
-                        <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-zinc-300 hover:text-red-500">
+                        <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-zinc-400 hover:text-red-500 p-1">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -403,20 +395,19 @@
                         <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
                             <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
-                        <div class="flex-1">
-                            <div class="font-medium">${t.description}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium truncate">${t.description}</div>
                             <div class="text-xs text-zinc-500">${formatDate(t.date)}</div>
                         </div>
                     </div>
                     <div class="text-right flex items-center gap-4">
                         <div>
                             <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold">
-                                ${isIncome ? '+' : '-'} \]{parseFloat(t.amount).toFixed(2)}
+                                \( {isIncome ? '+' : '-'}₹ \){parseFloat(t.amount).toFixed(2)}
                             </div>
-                            \( {t.payer ? `<div class="text-xs text-emerald-600"> \){t.payer}</div>` : ''}
                             \( {t.category ? `<div class="text-xs text-zinc-400"> \){t.category}</div>` : ''}
                         </div>
-                        <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-zinc-300 hover:text-red-500">
+                        <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-zinc-400 hover:text-red-500 p-1">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -435,7 +426,7 @@
             const expenseByCat = {};
             transactions.filter(t => t.type === 'expense').forEach(t => {
                 const cat = t.category || 'Other';
-                expenseByCat[cat] = (expenseByCat[cat] || 0) + parseFloat(t.amount);
+                expenseByCat[cat] = (expenseByCat[cat] || 0) + parseFloat(t.amount || 0);
             });
             
             const total = Object.values(expenseByCat).reduce((a,b)=>a+b,0) || 1;
@@ -447,14 +438,18 @@
                 div.innerHTML = `
                     <div class="flex justify-between text-sm mb-2">
                         <span>${cat}</span>
-                        <span class="font-medium">\[ {amt.toFixed(0)} (${perc}%)</span>
+                        <span class="font-medium">₹\( {amt.toFixed(0)} ( \){perc}%)</span>
                     </div>
                     <div class="h-2.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                        <div class="h-full bg-red-500 rounded-full transition-all" style="width: ${perc}%"></div>
+                        <div class="h-full bg-red-500 rounded-full" style="width: ${perc}%"></div>
                     </div>
                 `;
                 container.appendChild(div);
             });
+            
+            if (Object.keys(expenseByCat).length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-zinc-400">No expense data yet</div>`;
+            }
         }
         
         function renderWeekSummary() {
@@ -471,13 +466,14 @@
             transactions.forEach(t => {
                 const tDate = new Date(t.date);
                 if (tDate >= weekStart && tDate <= now) {
-                    const dayIndex = (tDate.getDay() + 6) % 7; // Mon-Sun
+                    const dayIndex = (tDate.getDay() + 6) % 7;
+                    const amt = parseFloat(t.amount || 0);
                     if (t.type === 'income') {
-                        weekIncome += parseFloat(t.amount);
-                        dailyData[dayIndex] += parseFloat(t.amount);
+                        weekIncome += amt;
+                        dailyData[dayIndex] += amt;
                     } else {
-                        weekExpense += parseFloat(t.amount);
-                        dailyData[dayIndex] -= parseFloat(t.amount);
+                        weekExpense += amt;
+                        dailyData[dayIndex] -= amt;
                     }
                 }
             });
@@ -485,15 +481,14 @@
             weekDiv.innerHTML = `
                 <div class="glass rounded-3xl p-4">
                     <div class="text-emerald-500 text-sm">Income</div>
-                    <div class="text-2xl font-semibold mt-1"> \]{weekIncome.toFixed(0)}</div>
+                    <div class="text-2xl font-semibold mt-1">₹${weekIncome.toFixed(0)}</div>
                 </div>
                 <div class="glass rounded-3xl p-4">
                     <div class="text-red-500 text-sm">Expense</div>
-                    <div class="text-2xl font-semibold mt-1">$${weekExpense.toFixed(0)}</div>
+                    <div class="text-2xl font-semibold mt-1">₹${weekExpense.toFixed(0)}</div>
                 </div>
             `;
             
-            // Week line chart
             if (weekChartInstance) weekChartInstance.destroy();
             const ctx = document.getElementById('week-chart').getContext('2d');
             weekChartInstance = new Chart(ctx, {
@@ -501,14 +496,19 @@
                 data: {
                     labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
                     datasets: [{
-                        label: 'Net',
+                        label: 'Net Flow',
                         data: dailyData,
                         borderColor: '#3b82f6',
                         tension: 0.4,
-                        borderWidth: 3
+                        borderWidth: 3,
+                        pointRadius: 3
                     }]
                 },
-                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#e5e7eb' } } } }
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { grid: { color: isDark ? '#374151' : '#e5e7eb' }}}
+                }
             });
         }
         
@@ -519,7 +519,7 @@
             const expenseByCat = {};
             transactions.filter(t => t.type === 'expense').forEach(t => {
                 const cat = t.category || 'Other';
-                expenseByCat[cat] = (expenseByCat[cat] || 0) + parseFloat(t.amount);
+                expenseByCat[cat] = (expenseByCat[cat] || 0) + parseFloat(t.amount || 0);
             });
             
             const colors = ['#ef4444','#f59e0b','#eab308','#84cc16','#22c55e','#06b6d4','#6366f1'];
@@ -531,37 +531,50 @@
                     datasets: [{
                         data: Object.values(expenseByCat),
                         backgroundColor: colors,
-                        borderWidth: 4,
-                        borderColor: '#fff'
+                        borderWidth: 5,
+                        borderColor: isDark ? '#1f2937' : '#ffffff'
                     }]
                 },
                 options: {
-                    cutout: '70%',
-                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 18 } } }
+                    cutout: '68%',
+                    responsive: true,
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { boxWidth: 12, padding: 16, color: isDark ? '#e5e7eb' : '#374151' } 
+                        } 
+                    }
                 }
             });
         }
         
         function setType(type) {
             currentType = type;
-            document.getElementById('type-expense').classList.toggle('bg-white', type === 'expense');
-            document.getElementById('type-expense').classList.toggle('dark:bg-zinc-700', type === 'expense');
-            document.getElementById('type-income').classList.toggle('bg-white', type === 'income');
-            document.getElementById('type-income').classList.toggle('dark:bg-zinc-700', type === 'income');
+            const expBtn = document.getElementById('type-expense');
+            const incBtn = document.getElementById('type-income');
+            
+            if (type === 'expense') {
+                expBtn.classList.add('bg-white', 'dark:bg-zinc-700', 'shadow-sm');
+                incBtn.classList.remove('bg-white', 'dark:bg-zinc-700', 'shadow-sm');
+            } else {
+                incBtn.classList.add('bg-white', 'dark:bg-zinc-700', 'shadow-sm');
+                expBtn.classList.remove('bg-white', 'dark:bg-zinc-700', 'shadow-sm');
+            }
             
             document.getElementById('payer-field').classList.toggle('hidden', type !== 'income');
             document.getElementById('category-group').classList.toggle('hidden', type !== 'expense');
         }
         
         function addTransaction() {
-            const amount = parseFloat(document.getElementById('amount').value);
+            const amountStr = document.getElementById('amount').value;
+            const amount = parseFloat(amountStr);
             const description = document.getElementById('description').value.trim();
             const date = document.getElementById('date').value;
             const category = currentType === 'expense' ? document.getElementById('category').value : null;
             const payer = currentType === 'income' ? document.getElementById('payer').value.trim() : null;
             
-            if (!amount || !description || !date) {
-                showToast("Please fill all required fields", true);
+            if (!amount || isNaN(amount) || !description || !date) {
+                showToast("Please fill Amount, Description & Date", true);
                 return;
             }
             
@@ -582,10 +595,9 @@
             document.getElementById('amount').value = '';
             document.getElementById('description').value = '';
             document.getElementById('payer').value = '';
-            document.getElementById('date').value = new Date().toISOString().split('T')[0];
             
             showToast(currentType === 'income' ? 'Income added ✓' : 'Expense recorded ✓');
-            setTimeout(() => switchTab(1), 700);
+            setTimeout(() => switchTab(1), 800);
         }
         
         function exportToExcel() {
@@ -606,7 +618,6 @@
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(data);
             
-            // Summary row
             const totalIncome = transactions.filter(t=>t.type==='income').reduce((sum,t)=>sum+parseFloat(t.amount),0);
             const totalExpense = transactions.filter(t=>t.type==='expense').reduce((sum,t)=>sum+parseFloat(t.amount),0);
             
@@ -621,7 +632,7 @@
             
             XLSX.utils.book_append_sheet(wb, ws, "Transactions");
             XLSX.writeFile(wb, `FlowTrack_Statement_${new Date().toISOString().slice(0,10)}.xlsx`);
-            showToast("Excel downloaded");
+            showToast("Excel file downloaded");
         }
         
         function showToast(message, error = false) {
@@ -629,7 +640,7 @@
             document.getElementById('toast-text').textContent = message;
             toast.style.backgroundColor = error ? '#b91c1c' : '#18181b';
             toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 2800);
+            setTimeout(() => toast.classList.add('hidden'), 2600);
         }
         
         function refreshAll() {
@@ -654,7 +665,7 @@
                 setTimeout(() => {
                     renderWeekSummary();
                     renderPieChart();
-                }, 50);
+                }, 100);
             }
         }
         
@@ -677,7 +688,6 @@
                 display.value = '0';
                 return;
             }
-            if (calcExpression === '0' && val !== '.') calcExpression = '';
             calcExpression += val;
             display.value = calcExpression || '0';
         }
@@ -690,27 +700,23 @@
                 calcExpression = result.toString();
             } catch(e) {
                 display.value = 'Error';
-                setTimeout(() => { calcExpression = ''; display.value = '0'; }, 1200);
+                setTimeout(() => { calcExpression = ''; display.value = '0'; }, 1500);
             }
         }
         
-        // Init
         function init() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date').value = today;
             
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-icon').classList.remove('fa-moon');
-                document.getElementById('theme-icon').classList.add('fa-sun');
-            }
+            // Apply saved theme
+            document.documentElement.classList.toggle('dark', isDark);
+            updateThemeIcon();
             
             if (transactions.length === 0) {
                 transactions = [
-                    {id:1723456789012,type:"income",amount:1250,description:"Salary deposit",date:"2026-06-01",payer:"Company Inc."},
-                    {id:1723456789013,type:"expense",amount:45.5,description:"Lunch at Cafe",date:"2026-06-03",category:"Food"},
-                    {id:1723456789014,type:"expense",amount:120,description:"Groceries",date:"2026-06-04",category:"Food"},
-                    {id:1723456789015,type:"income",amount:320,description:"Freelance project",date:"2026-06-05",payer:"Client XYZ"}
+                    {id: Date.now()-100000, type:"income", amount:1250, description:"Salary deposit", date:"2026-06-01", payer:"Company Inc."},
+                    {id: Date.now()-90000, type:"expense", amount:45.5, description:"Lunch at Cafe", date:"2026-06-03", category:"Food"},
+                    {id: Date.now()-80000, type:"expense", amount:120, description:"Groceries", date:"2026-06-04", category:"Food"}
                 ];
                 saveTransactions();
             }
@@ -718,7 +724,7 @@
             refreshAll();
             switchTab(0);
             
-            console.log('%cFlowTrack ready with all enhancements ✓', 'color:#3b82f6; font-family:monospace');
+            console.log('%cFlowTrack India Edition initialized ✓', 'color:#3b82f6; font-family:monospace');
         }
         
         window.onload = init;
