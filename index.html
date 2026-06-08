@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlowTrack • Minimal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -39,28 +41,19 @@
             transform: translateX(4px);
         }
         
-        .amount-positive {
-            color: #10b981;
-        }
-        
-        .amount-negative {
-            color: #ef4444;
-        }
+        .amount-positive { color: #10b981; }
+        .amount-negative { color: #ef4444; }
         
         .modal {
             animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
         @keyframes modalPop {
-            from {
-                opacity: 0;
-                transform: scale(0.8) translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            from { opacity: 0; transform: scale(0.8) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
+        
+        canvas { max-width: 100% !important; }
     </style>
 </head>
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen pb-20">
@@ -75,8 +68,13 @@
                         <p class="text-xs text-zinc-500 dark:text-zinc-400 -mt-1">minimal expense tracker</p>
                     </div>
                 </div>
-                <div onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
-                    <i id="theme-icon" class="fas fa-moon text-lg"></i>
+                <div class="flex items-center gap-3">
+                    <button onclick="showCalculator()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                        <i class="fas fa-calculator text-lg"></i>
+                    </button>
+                    <div onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                        <i id="theme-icon" class="fas fa-moon text-lg"></i>
+                    </div>
                 </div>
             </div>
             
@@ -100,50 +98,40 @@
         </header>
 
         <!-- NAV -->
-        <nav class="flex border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 sticky top-[140px] z-40">
-            <button onclick="switchTab(0)" id="tab-0" class="nav-active flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
+        <nav class="flex border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 sticky top-[140px] z-40 text-sm">
+            <button onclick="switchTab(0)" id="tab-0" class="nav-active flex-1 py-4 font-medium flex items-center justify-center gap-2">
+                <i class="fas fa-home"></i><span>Home</span>
             </button>
-            <button onclick="switchTab(1)" id="tab-1" class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
-                <i class="fas fa-list"></i>
-                <span>Transactions</span>
+            <button onclick="switchTab(1)" id="tab-1" class="flex-1 py-4 font-medium flex items-center justify-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
+                <i class="fas fa-list"></i><span>Transactions</span>
             </button>
-            <button onclick="switchTab(2)" id="tab-2" class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
-                <i class="fas fa-plus"></i>
-                <span>Add</span>
+            <button onclick="switchTab(2)" id="tab-2" class="flex-1 py-4 font-medium flex items-center justify-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
+                <i class="fas fa-plus"></i><span>Add</span>
             </button>
-            <button onclick="switchTab(3)" id="tab-3" class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
-                <i class="fas fa-chart-pie"></i>
-                <span>Reports</span>
+            <button onclick="switchTab(3)" id="tab-3" class="flex-1 py-4 font-medium flex items-center justify-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
+                <i class="fas fa-chart-pie"></i><span>Analytics</span>
             </button>
         </nav>
 
         <!-- MAIN CONTENT -->
         <main class="p-6">
-            
             <!-- TAB 0: HOME -->
             <div id="content-0" class="tab-content">
                 <div class="mb-8">
                     <h2 class="font-semibold mb-4 flex items-center gap-2">
                         <i class="fas fa-clock"></i> Recent Activity
                     </h2>
-                    <div id="recent-list" class="space-y-3">
-                        <!-- populated by JS -->
-                    </div>
+                    <div id="recent-list" class="space-y-3"></div>
                 </div>
                 
-                <div>
-                    <h2 class="font-semibold mb-4">Quick Stats</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-5">
-                            <div class="text-emerald-600 text-sm font-medium">This Month Income</div>
-                            <div id="month-income" class="text-3xl font-semibold mt-2">$3,240</div>
-                        </div>
-                        <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-5">
-                            <div class="text-red-600 text-sm font-medium">This Month Spent</div>
-                            <div id="month-expense" class="text-3xl font-semibold mt-2">$892</div>
-                        </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-5">
+                        <div class="text-emerald-600 text-sm font-medium">This Month Income</div>
+                        <div id="month-income" class="text-3xl font-semibold mt-2">$3,240</div>
+                    </div>
+                    <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-5">
+                        <div class="text-red-600 text-sm font-medium">This Month Spent</div>
+                        <div id="month-expense" class="text-3xl font-semibold mt-2">$892</div>
                     </div>
                 </div>
             </div>
@@ -158,15 +146,16 @@
                             <option value="income">Income</option>
                             <option value="expense">Expense</option>
                         </select>
+                        <button onclick="exportToExcel()" class="px-4 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-2xl flex items-center gap-2">
+                            <i class="fas fa-download"></i> Excel
+                        </button>
                     </div>
                 </div>
                 
-                <div id="transactions-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-                    <!-- populated by JS -->
-                </div>
+                <div id="transactions-list" class="space-y-3 max-h-[520px] overflow-y-auto pr-2"></div>
             </div>
             
-            <!-- TAB 2: ADD TRANSACTION -->
+            <!-- TAB 2: ADD -->
             <div id="content-2" class="tab-content hidden">
                 <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-8">
                     <h2 class="font-semibold text-xl mb-6 text-center">New Transaction</h2>
@@ -203,10 +192,10 @@
                             <div id="category-group">
                                 <label class="block text-sm text-zinc-500 mb-1.5">Category</label>
                                 <select id="category" class="w-full px-6 py-4 bg-zinc-100 dark:bg-zinc-800 rounded-3xl focus:outline-none">
-                                    <option value="Food">Food &amp; Drink</option>
+                                    <option value="Food">Food & Drink</option>
                                     <option value="Transport">Transport</option>
                                     <option value="Shopping">Shopping</option>
-                                    <option value="Bills">Bills &amp; Utilities</option>
+                                    <option value="Bills">Bills & Utilities</option>
                                     <option value="Health">Health</option>
                                     <option value="Entertainment">Entertainment</option>
                                     <option value="Other">Other</option>
@@ -221,23 +210,31 @@
                 </div>
             </div>
             
-            <!-- TAB 3: REPORTS -->
+            <!-- TAB 3: ANALYTICS -->
             <div id="content-3" class="tab-content hidden">
-                <h2 class="font-semibold mb-6">Monthly Overview</h2>
+                <h2 class="font-semibold mb-6">Analytics & Reports</h2>
                 
+                <!-- Week-wise -->
                 <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 mb-8">
-                    <div class="flex justify-between items-baseline mb-6">
-                        <div>
-                            <div class="text-sm text-zinc-500">Balance Trend</div>
-                        </div>
-                        <div class="text-xs bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-2xl">Last 30 days</div>
+                    <div class="flex justify-between mb-5">
+                        <h3 class="font-medium">This Week Overview</h3>
+                        <span class="text-xs bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-2xl">Last 7 days</span>
                     </div>
-                    <canvas id="trend-chart" width="300" height="160"></canvas>
+                    <div id="week-summary" class="grid grid-cols-2 gap-4 text-center"></div>
+                    <canvas id="week-chart" class="mt-6" height="140"></canvas>
                 </div>
                 
-                <h3 class="font-medium mb-4 text-sm uppercase tracking-widest text-zinc-500">Spending by Category</h3>
-                <div id="category-breakdown" class="space-y-5">
-                    <!-- populated by JS -->
+                <!-- Pie Chart -->
+                <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 mb-8">
+                    <h3 class="font-medium mb-4">Spending by Category</h3>
+                    <div class="flex justify-center">
+                        <canvas id="pie-chart" width="260" height="260"></canvas>
+                    </div>
+                </div>
+                
+                <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6">
+                    <h3 class="font-medium mb-4">Monthly Summary</h3>
+                    <div id="category-breakdown" class="space-y-5"></div>
                 </div>
             </div>
         </main>
@@ -248,19 +245,56 @@
         <i class="fas fa-plus"></i>
     </button>
 
+    <!-- CALCULATOR MODAL -->
+    <div id="calc-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+        <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl w-full max-w-xs mx-4 p-6 modal">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-semibold">Quick Calculator</h3>
+                <button onclick="hideCalculator()" class="text-zinc-400 hover:text-zinc-600"><i class="fas fa-times"></i></button>
+            </div>
+            <input id="calc-display" readonly class="w-full text-right text-4xl font-light bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-3xl px-6 py-6 mb-6 focus:outline-none">
+            
+            <div class="grid grid-cols-4 gap-3 text-lg">
+                <button onclick="calcInput('C')" class="py-5 bg-red-100 dark:bg-red-900/30 text-red-600 font-medium rounded-2xl">C</button>
+                <button onclick="calcInput('(')" class="py-5 bg-zinc-100 dark:bg-zinc-800 rounded-2xl">(</button>
+                <button onclick="calcInput(')')" class="py-5 bg-zinc-100 dark:bg-zinc-800 rounded-2xl">)</button>
+                <button onclick="calcInput('/')" class="py-5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">÷</button>
+                
+                <button onclick="calcInput('7')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">7</button>
+                <button onclick="calcInput('8')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">8</button>
+                <button onclick="calcInput('9')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">9</button>
+                <button onclick="calcInput('*')" class="py-5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">×</button>
+                
+                <button onclick="calcInput('4')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">4</button>
+                <button onclick="calcInput('5')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">5</button>
+                <button onclick="calcInput('6')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">6</button>
+                <button onclick="calcInput('-')" class="py-5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">−</button>
+                
+                <button onclick="calcInput('1')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">1</button>
+                <button onclick="calcInput('2')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">2</button>
+                <button onclick="calcInput('3')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">3</button>
+                <button onclick="calcInput('+')" class="py-5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">+</button>
+                
+                <button onclick="calcInput('0')" class="py-5 bg-white dark:bg-zinc-800 col-span-2 rounded-2xl">0</button>
+                <button onclick="calcInput('.')" class="py-5 bg-white dark:bg-zinc-800 rounded-2xl">.</button>
+                <button onclick="calcEquals()" class="py-5 bg-blue-600 text-white rounded-2xl">=</button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST -->
-    <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-zinc-800 text-white text-sm px-6 py-3 rounded-3xl shadow-xl flex items-center gap-3">
-        <i class="fas fa-check-circle text-emerald-400"></i>
+    <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-zinc-800 text-white text-sm px-6 py-3 rounded-3xl shadow-xl flex items-center gap-3 z-50">
+        <i id="toast-icon" class="fas fa-check-circle text-emerald-400"></i>
         <span id="toast-text"></span>
     </div>
 
     <script>
-        // Tailwind script already loaded via CDN
-        
         let transactions = JSON.parse(localStorage.getItem('flowtrack_transactions')) || [];
         let currentTab = 0;
         let currentType = 'expense';
         let isDark = localStorage.getItem('darkMode') === 'true';
+        let pieChartInstance = null;
+        let weekChartInstance = null;
         
         function toggleTheme() {
             isDark = !isDark;
@@ -276,59 +310,70 @@
         
         function formatDate(dateStr) {
             const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        function formatFullDateTime() {
+            const now = new Date();
+            return now.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
         }
         
         function calculateBalance() {
-            let income = 0;
-            let expense = 0;
-            
+            let income = 0, expense = 0;
             transactions.forEach(t => {
                 if (t.type === 'income') income += parseFloat(t.amount);
                 else expense += parseFloat(t.amount);
             });
-            
             const balance = income - expense;
-            
             document.getElementById('balance').textContent = '$' + balance.toFixed(2);
             document.getElementById('total-income').textContent = '$' + income.toFixed(0);
             document.getElementById('total-expense').textContent = '$' + expense.toFixed(0);
-            
             return { income, expense, balance };
+        }
+        
+        function deleteTransaction(id) {
+            if (confirm("Delete this transaction?")) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveTransactions();
+                refreshAll();
+                showToast("Transaction deleted");
+            }
         }
         
         function renderRecent() {
             const container = document.getElementById('recent-list');
             container.innerHTML = '';
-            
             const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
             
             if (sorted.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-zinc-400">No transactions yet.<br>Add your first one!</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-zinc-400">No transactions yet.<br>Tap + to add</div>`;
                 return;
             }
             
             sorted.forEach(t => {
                 const div = document.createElement('div');
                 div.className = `transaction-item flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-4`;
-                
                 const isIncome = t.type === 'income';
-                
                 div.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900' : 'bg-red-100 text-red-600 dark:bg-red-900'}">
+                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
                             <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
                         <div>
                             <div class="font-medium">${t.description}</div>
-                            <div class="text-xs text-zinc-500">${formatDate(t.date)} ${t.category ? '• ' + t.category : ''}</div>
+                            <div class="text-xs text-zinc-500">${formatDate(t.date)}</div>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold">
-                            ${isIncome ? '+' : '-'}\[ {parseFloat(t.amount).toFixed(2)}
+                    <div class="text-right flex items-center gap-3">
+                        <div>
+                            <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold">
+                                ${isIncome ? '+' : '-'}\[ {parseFloat(t.amount).toFixed(2)}
+                            </div>
+                            \( {t.payer ? `<div class="text-xs text-emerald-600"> \){t.payer}</div>` : ''}
                         </div>
-                        \( {t.payer ? `<div class="text-xs text-zinc-400"> \){t.payer}</div>` : ''}
+                        <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-zinc-300 hover:text-red-500">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -338,41 +383,42 @@
         function renderTransactions(filter = 'all') {
             const container = document.getElementById('transactions-list');
             container.innerHTML = '';
-            
             let filtered = transactions;
-            
             if (filter === 'income') filtered = transactions.filter(t => t.type === 'income');
             if (filter === 'expense') filtered = transactions.filter(t => t.type === 'expense');
             
             filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-20 text-zinc-400">No transactions match your filter.</div>`;
+                container.innerHTML = `<div class="text-center py-20 text-zinc-400">No transactions found</div>`;
                 return;
             }
             
-            filtered.forEach((t, index) => {
+            filtered.forEach(t => {
                 const div = document.createElement('div');
                 div.className = `transaction-item flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-4`;
-                
                 const isIncome = t.type === 'income';
-                
                 div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900' : 'bg-red-100 text-red-600 dark:bg-red-900'}">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
                             <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
-                        <div>
+                        <div class="flex-1">
                             <div class="font-medium">${t.description}</div>
                             <div class="text-xs text-zinc-500">${formatDate(t.date)}</div>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold">
-                            ${isIncome ? '+' : '-'} \]{parseFloat(t.amount).toFixed(2)}
+                    <div class="text-right flex items-center gap-4">
+                        <div>
+                            <div class="${isIncome ? 'amount-positive' : 'amount-negative'} font-semibold">
+                                ${isIncome ? '+' : '-'} \]{parseFloat(t.amount).toFixed(2)}
+                            </div>
+                            \( {t.payer ? `<div class="text-xs text-emerald-600"> \){t.payer}</div>` : ''}
+                            \( {t.category ? `<div class="text-xs text-zinc-400"> \){t.category}</div>` : ''}
                         </div>
-                        \( {t.payer ? `<div class="text-xs text-emerald-600"> \){t.payer}</div>` : ''}
-                        \( {t.category ? `<div class="text-xs text-zinc-400"> \){t.category}</div>` : ''}
+                        <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-zinc-300 hover:text-red-500">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -380,49 +426,124 @@
         }
         
         function filterTransactions() {
-            const filter = document.getElementById('filter-type').value;
-            renderTransactions(filter);
+            renderTransactions(document.getElementById('filter-type').value);
         }
         
         function renderCategoryBreakdown() {
             const container = document.getElementById('category-breakdown');
             container.innerHTML = '';
-            
             const expenseByCat = {};
-            
             transactions.filter(t => t.type === 'expense').forEach(t => {
                 const cat = t.category || 'Other';
-                if (!expenseByCat[cat]) expenseByCat[cat] = 0;
-                expenseByCat[cat] += parseFloat(t.amount);
+                expenseByCat[cat] = (expenseByCat[cat] || 0) + parseFloat(t.amount);
             });
             
-            const totalExpense = Object.values(expenseByCat).reduce((a, b) => a + b, 0) || 1;
+            const total = Object.values(expenseByCat).reduce((a,b)=>a+b,0) || 1;
             
-            Object.keys(expenseByCat).sort((a, b) => expenseByCat[b] - expenseByCat[a]).forEach(cat => {
-                const amount = expenseByCat[cat];
-                const percent = Math.round((amount / totalExpense) * 100);
-                
+            Object.keys(expenseByCat).sort((a,b)=> expenseByCat[b]-expenseByCat[a]).forEach(cat => {
+                const amt = expenseByCat[cat];
+                const perc = Math.round((amt / total) * 100);
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <div class="flex justify-between text-sm mb-2">
                         <span>${cat}</span>
-                        <span class="font-medium">$${amount.toFixed(0)}</span>
+                        <span class="font-medium">\[ {amt.toFixed(0)} (${perc}%)</span>
                     </div>
-                    <div class="h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                        <div class="h-full bg-red-500 rounded-full" style="width: ${percent}%"></div>
+                    <div class="h-2.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-red-500 rounded-full transition-all" style="width: ${perc}%"></div>
                     </div>
                 `;
                 container.appendChild(div);
             });
+        }
+        
+        function renderWeekSummary() {
+            const weekDiv = document.getElementById('week-summary');
+            weekDiv.innerHTML = '';
             
-            if (Object.keys(expenseByCat).length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-zinc-400">No expense data yet</div>`;
-            }
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - 6);
+            
+            let weekIncome = 0, weekExpense = 0;
+            const dailyData = Array(7).fill(0);
+            
+            transactions.forEach(t => {
+                const tDate = new Date(t.date);
+                if (tDate >= weekStart && tDate <= now) {
+                    const dayIndex = (tDate.getDay() + 6) % 7; // Mon-Sun
+                    if (t.type === 'income') {
+                        weekIncome += parseFloat(t.amount);
+                        dailyData[dayIndex] += parseFloat(t.amount);
+                    } else {
+                        weekExpense += parseFloat(t.amount);
+                        dailyData[dayIndex] -= parseFloat(t.amount);
+                    }
+                }
+            });
+            
+            weekDiv.innerHTML = `
+                <div class="glass rounded-3xl p-4">
+                    <div class="text-emerald-500 text-sm">Income</div>
+                    <div class="text-2xl font-semibold mt-1"> \]{weekIncome.toFixed(0)}</div>
+                </div>
+                <div class="glass rounded-3xl p-4">
+                    <div class="text-red-500 text-sm">Expense</div>
+                    <div class="text-2xl font-semibold mt-1">$${weekExpense.toFixed(0)}</div>
+                </div>
+            `;
+            
+            // Week line chart
+            if (weekChartInstance) weekChartInstance.destroy();
+            const ctx = document.getElementById('week-chart').getContext('2d');
+            weekChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+                    datasets: [{
+                        label: 'Net',
+                        data: dailyData,
+                        borderColor: '#3b82f6',
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#e5e7eb' } } } }
+            });
+        }
+        
+        function renderPieChart() {
+            if (pieChartInstance) pieChartInstance.destroy();
+            const ctx = document.getElementById('pie-chart').getContext('2d');
+            
+            const expenseByCat = {};
+            transactions.filter(t => t.type === 'expense').forEach(t => {
+                const cat = t.category || 'Other';
+                expenseByCat[cat] = (expenseByCat[cat] || 0) + parseFloat(t.amount);
+            });
+            
+            const colors = ['#ef4444','#f59e0b','#eab308','#84cc16','#22c55e','#06b6d4','#6366f1'];
+            
+            pieChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(expenseByCat),
+                    datasets: [{
+                        data: Object.values(expenseByCat),
+                        backgroundColor: colors,
+                        borderWidth: 4,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 18 } } }
+                }
+            });
         }
         
         function setType(type) {
             currentType = type;
-            
             document.getElementById('type-expense').classList.toggle('bg-white', type === 'expense');
             document.getElementById('type-expense').classList.toggle('dark:bg-zinc-700', type === 'expense');
             document.getElementById('type-income').classList.toggle('bg-white', type === 'income');
@@ -433,21 +554,14 @@
         }
         
         function addTransaction() {
-            const amountInput = document.getElementById('amount');
+            const amount = parseFloat(document.getElementById('amount').value);
             const description = document.getElementById('description').value.trim();
             const date = document.getElementById('date').value;
             const category = currentType === 'expense' ? document.getElementById('category').value : null;
             const payer = currentType === 'income' ? document.getElementById('payer').value.trim() : null;
             
-            let amount = parseFloat(amountInput.value);
-            
             if (!amount || !description || !date) {
-                showToast("Please fill amount, description and date", true);
-                return;
-            }
-            
-            if (amount <= 0) {
-                showToast("Amount must be greater than zero", true);
+                showToast("Please fill all required fields", true);
                 return;
             }
             
@@ -464,75 +578,58 @@
             saveTransactions();
             refreshAll();
             
-            // reset form
-            amountInput.value = '';
+            // Clear form
+            document.getElementById('amount').value = '';
             document.getElementById('description').value = '';
             document.getElementById('payer').value = '';
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
             
             showToast(currentType === 'income' ? 'Income added ✓' : 'Expense recorded ✓');
+            setTimeout(() => switchTab(1), 700);
+        }
+        
+        function exportToExcel() {
+            if (transactions.length === 0) {
+                showToast("No transactions to export", true);
+                return;
+            }
             
-            // switch to transactions tab after adding
-            setTimeout(() => {
-                switchTab(1);
-            }, 800);
+            const data = transactions.map(t => ({
+                Date: formatDate(t.date),
+                Type: t.type.toUpperCase(),
+                Description: t.description,
+                Amount: parseFloat(t.amount),
+                Category: t.category || '',
+                Payer: t.payer || ''
+            }));
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+            
+            // Summary row
+            const totalIncome = transactions.filter(t=>t.type==='income').reduce((sum,t)=>sum+parseFloat(t.amount),0);
+            const totalExpense = transactions.filter(t=>t.type==='expense').reduce((sum,t)=>sum+parseFloat(t.amount),0);
+            
+            XLSX.utils.sheet_add_aoa(ws, [
+                ["", "", "", "", "", ""],
+                ["SUMMARY", "", "", "", "", ""],
+                ["Total Income", "", "", totalIncome.toFixed(2), "", ""],
+                ["Total Expense", "", "", totalExpense.toFixed(2), "", ""],
+                ["Net Balance", "", "", (totalIncome - totalExpense).toFixed(2), "", ""],
+                ["Exported on", "", "", formatFullDateTime(), "", ""]
+            ], { origin: -1 });
+            
+            XLSX.utils.book_append_sheet(wb, ws, "Transactions");
+            XLSX.writeFile(wb, `FlowTrack_Statement_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast("Excel downloaded");
         }
         
         function showToast(message, error = false) {
             const toast = document.getElementById('toast');
-            const text = document.getElementById('toast-text');
-            text.textContent = message;
-            toast.classList.remove('hidden');
+            document.getElementById('toast-text').textContent = message;
             toast.style.backgroundColor = error ? '#b91c1c' : '#18181b';
-            
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 2800);
-        }
-        
-        function simpleLineChart(canvasId, data) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const maxVal = Math.max(...data);
-            const minVal = Math.min(...data);
-            const range = maxVal - minVal || 1;
-            
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 3.5;
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-            ctx.shadowColor = 'rgba(59, 130, 246, 0.4)';
-            ctx.shadowBlur = 12;
-            
-            ctx.beginPath();
-            
-            for (let i = 0; i < data.length; i++) {
-                const x = (i / (data.length - 1)) * (canvas.width - 30) + 15;
-                const y = canvas.height - 25 - ((data[i] - minVal) / range) * (canvas.height - 60);
-                
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-            
-            // dots
-            ctx.fillStyle = '#3b82f6';
-            for (let i = 0; i < data.length; i++) {
-                const x = (i / (data.length - 1)) * (canvas.width - 30) + 15;
-                const y = canvas.height - 25 - ((data[i] - minVal) / range) * (canvas.height - 60);
-                ctx.beginPath();
-                ctx.arc(x, y, 4.5, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        
-        function generateFakeTrendData() {
-            // simple decreasing then increasing demo
-            return [920, 1340, 980, 1560, 1240, 1890, 1620, 2140];
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2800);
         }
         
         function refreshAll() {
@@ -540,82 +637,80 @@
             renderRecent();
             renderTransactions(document.getElementById('filter-type').value);
             renderCategoryBreakdown();
-            
-            // demo chart
-            const trendData = generateFakeTrendData();
-            simpleLineChart('trend-chart', trendData);
+            renderWeekSummary();
+            renderPieChart();
         }
         
         function switchTab(tab) {
             currentTab = tab;
-            
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`content-${tab}`).classList.remove('hidden');
             
             document.querySelectorAll('nav button').forEach((btn, i) => {
-                if (i === tab) {
-                    btn.classList.add('nav-active');
-                } else {
-                    btn.classList.remove('nav-active');
-                }
+                btn.classList.toggle('nav-active', i === tab);
             });
             
             if (tab === 3) {
                 setTimeout(() => {
-                    const trendData = generateFakeTrendData();
-                    simpleLineChart('trend-chart', trendData);
-                }, 100);
+                    renderWeekSummary();
+                    renderPieChart();
+                }, 50);
             }
         }
         
-        // Initialize
+        // Calculator
+        let calcExpression = '';
+        function showCalculator() {
+            document.getElementById('calc-modal').classList.remove('hidden');
+            calcExpression = '';
+            document.getElementById('calc-display').value = '0';
+        }
+        
+        function hideCalculator() {
+            document.getElementById('calc-modal').classList.add('hidden');
+        }
+        
+        function calcInput(val) {
+            const display = document.getElementById('calc-display');
+            if (val === 'C') {
+                calcExpression = '';
+                display.value = '0';
+                return;
+            }
+            if (calcExpression === '0' && val !== '.') calcExpression = '';
+            calcExpression += val;
+            display.value = calcExpression || '0';
+        }
+        
+        function calcEquals() {
+            const display = document.getElementById('calc-display');
+            try {
+                let result = eval(calcExpression.replace('×','*').replace('÷','/'));
+                display.value = Number(result.toFixed(4));
+                calcExpression = result.toString();
+            } catch(e) {
+                display.value = 'Error';
+                setTimeout(() => { calcExpression = ''; display.value = '0'; }, 1200);
+            }
+        }
+        
+        // Init
         function init() {
-            // Set today's date
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date').value = today;
             
-            // Dark mode
             if (isDark) {
                 document.documentElement.classList.add('dark');
                 document.getElementById('theme-icon').classList.remove('fa-moon');
                 document.getElementById('theme-icon').classList.add('fa-sun');
             }
             
-            // Sample data if empty
             if (transactions.length === 0) {
                 transactions = [
-                    {
-                        id: 1723456789012,
-                        type: "income",
-                        amount: 1250,
-                        description: "Salary deposit",
-                        date: "2026-06-01",
-                        payer: "Company Inc."
-                    },
-                    {
-                        id: 1723456789013,
-                        type: "expense",
-                        amount: 45.5,
-                        description: "Lunch at Cafe",
-                        date: "2026-06-03",
-                        category: "Food"
-                    },
-                    {
-                        id: 1723456789014,
-                        type: "expense",
-                        amount: 120,
-                        description: "Groceries",
-                        date: "2026-06-04",
-                        category: "Food"
-                    },
-                    {
-                        id: 1723456789015,
-                        type: "income",
-                        amount: 320,
-                        description: "Freelance project",
-                        date: "2026-06-05",
-                        payer: "Client XYZ"
-                    }
+                    {id:1723456789012,type:"income",amount:1250,description:"Salary deposit",date:"2026-06-01",payer:"Company Inc."},
+                    {id:1723456789013,type:"expense",amount:45.5,description:"Lunch at Cafe",date:"2026-06-03",category:"Food"},
+                    {id:1723456789014,type:"expense",amount:120,description:"Groceries",date:"2026-06-04",category:"Food"},
+                    {id:1723456789015,type:"income",amount:320,description:"Freelance project",date:"2026-06-05",payer:"Client XYZ"}
                 ];
                 saveTransactions();
             }
@@ -623,15 +718,7 @@
             refreshAll();
             switchTab(0);
             
-            // Keyboard support
-            document.addEventListener('keydown', (e) => {
-                if (e.key === "/" && document.getElementById('content-2').classList.contains('hidden')) {
-                    e.preventDefault();
-                    switchTab(2);
-                }
-            });
-            
-            console.log('%cFlowTrack initialized successfully ✓', 'color:#3b82f6; font-family:monospace');
+            console.log('%cFlowTrack ready with all enhancements ✓', 'color:#3b82f6; font-family:monospace');
         }
         
         window.onload = init;
