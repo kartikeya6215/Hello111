@@ -12,7 +12,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         body { font-family: 'Inter', system-ui, sans-serif; }
         .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); }
-        .dark .glass { background: rgba(17,24,39,0.95); }
         .nav-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; font-weight: 600; }
         .amount-positive { color: #10b981; }
         .amount-negative { color: #ef4444; }
@@ -20,33 +19,30 @@
         .tx-card:hover { transform: translateX(4px); }
     </style>
 </head>
-<body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen pb-20">
-    <div class="max-w-lg mx-auto bg-white dark:bg-zinc-900 min-h-screen shadow-xl overflow-hidden">
+<body class="bg-zinc-100 text-zinc-900 min-h-screen pb-20">
+    <div class="max-w-lg mx-auto bg-white min-h-screen shadow-xl overflow-hidden">
 
         <!-- HEADER -->
-        <header class="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+        <header class="sticky top-0 z-50 bg-white border-b border-zinc-200">
             <div class="px-6 py-5 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">₹</div>
                     <div>
                         <h1 class="text-2xl font-semibold tracking-tight">FlowTrack</h1>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">Smart Expense Tracker</p>
+                        <p class="text-xs text-zinc-500">Smart Expense Tracker</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="showCalculator()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                    <button onclick="showCalculator()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100">
                         <i class="fas fa-calculator text-xl"></i>
-                    </button>
-                    <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                        <i id="theme-icon" class="fas fa-moon text-xl"></i>
                     </button>
                 </div>
             </div>
 
             <!-- BALANCE -->
             <div class="px-6 pb-6">
-                <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 text-center">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">CURRENT BALANCE</p>
+                <div class="glass border border-zinc-200 rounded-3xl p-6 text-center">
+                    <p class="text-sm text-zinc-500">CURRENT BALANCE</p>
                     <div id="balance" class="text-5xl font-semibold tracking-tighter mt-1">₹0.00</div>
                     <div class="flex justify-center gap-8 mt-4 text-sm">
                         <div><span class="text-emerald-500">↑</span> <span id="total-income" class="font-semibold">₹0</span></div>
@@ -57,7 +53,7 @@
         </header>
 
         <!-- NAV -->
-        <nav class="flex bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-[172px] z-40">
+        <nav class="flex bg-white border-b border-zinc-200 sticky top-[172px] z-40">
             <button onclick="switchTab(0)" id="tab-0" class="nav-active flex-1 py-4 text-sm flex flex-col items-center gap-1"><i class="fas fa-home"></i> <span>Home</span></button>
             <button onclick="switchTab(1)" id="tab-1" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500"><i class="fas fa-list"></i> <span>History</span></button>
             <button onclick="switchTab(2)" id="tab-2" class="flex-1 py-4 text-sm flex flex-col items-center gap-1 text-zinc-500"><i class="fas fa-plus"></i> <span>Add</span></button>
@@ -84,10 +80,10 @@
 
             <!-- ADD -->
             <div id="content-2" class="tab-content hidden">
-                <div class="glass border border-zinc-200 dark:border-zinc-700 rounded-3xl p-8">
+                <div class="glass border border-zinc-200 rounded-3xl p-8">
                     <h2 class="font-semibold text-xl mb-6 text-center">New Transaction</h2>
 
-                    <div class="flex rounded-3xl bg-zinc-100 dark:bg-zinc-800 p-1 mb-8">
+                    <div class="flex rounded-3xl bg-zinc-100 p-1 mb-8">
                         <button onclick="setType('expense')" id="btn-expense" class="flex-1 py-3.5 rounded-3xl font-medium text-red-600 bg-white shadow">Expense</button>
                         <button onclick="setType('income')" id="btn-income" class="flex-1 py-3.5 rounded-3xl font-medium text-emerald-600">Income</button>
                     </div>
@@ -97,23 +93,23 @@
                             <label class="block text-sm mb-2 text-zinc-500">Amount (₹)</label>
                             <div class="relative">
                                 <span class="absolute left-6 top-4 text-3xl text-zinc-400">₹</span>
-                                <input id="amount" type="number" step="0.01" placeholder="0.00" class="w-full pl-14 py-5 text-4xl font-semibold bg-zinc-100 dark:bg-zinc-800 rounded-3xl focus:outline-none">
+                                <input id="amount" type="number" step="0.01" placeholder="0.00" class="w-full pl-14 py-5 text-4xl font-semibold bg-zinc-100 rounded-3xl focus:outline-none">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-sm mb-2 text-zinc-500">Description</label>
-                            <input id="description" type="text" placeholder="What was this for?" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
+                            <input id="description" type="text" placeholder="What was this for?" class="w-full px-6 py-5 bg-zinc-100 rounded-3xl">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm mb-2 text-zinc-500">Date</label>
-                                <input id="date" type="date" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
+                                <input id="date" type="date" class="w-full px-6 py-5 bg-zinc-100 rounded-3xl">
                             </div>
                             <div id="cat-group">
                                 <label class="block text-sm mb-2 text-zinc-500">Category</label>
-                                <select id="category" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
+                                <select id="category" class="w-full px-6 py-5 bg-zinc-100 rounded-3xl">
                                     <option value="Food">Food & Drink</option>
                                     <option value="Transport">Transport</option>
                                     <option value="Shopping">Shopping</option>
@@ -127,7 +123,7 @@
 
                         <div id="payer-group" class="hidden">
                             <label class="block text-sm mb-2 text-zinc-500">Paid By (Name)</label>
-                            <input id="payer" type="text" placeholder="Person / Company name" class="w-full px-6 py-5 bg-zinc-100 dark:bg-zinc-800 rounded-3xl">
+                            <input id="payer" type="text" placeholder="Person / Company name" class="w-full px-6 py-5 bg-zinc-100 rounded-3xl">
                         </div>
 
                         <button onclick="addTransaction()" class="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-3xl transition-colors">
@@ -169,24 +165,24 @@
             </div>
             <input id="calc-display" readonly class="w-full text-right text-5xl font-light bg-transparent focus:outline-none mb-8">
             <div class="grid grid-cols-4 gap-3 text-2xl">
-                <button onclick="calcInput('C')" class="py-6 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-2xl font-medium">C</button>
-                <button onclick="calcInput('/')" class="py-6 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">÷</button>
-                <button onclick="calcInput('*')" class="py-6 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">×</button>
-                <button onclick="calcInput('-')" class="py-6 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">−</button>
+                <button onclick="calcInput('C')" class="py-6 bg-red-100 text-red-600 rounded-2xl font-medium">C</button>
+                <button onclick="calcInput('/')" class="py-6 bg-amber-100 text-amber-600 rounded-2xl">÷</button>
+                <button onclick="calcInput('*')" class="py-6 bg-amber-100 text-amber-600 rounded-2xl">×</button>
+                <button onclick="calcInput('-')" class="py-6 bg-amber-100 text-amber-600 rounded-2xl">−</button>
                 
-                <button onclick="calcInput('7')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">7</button>
-                <button onclick="calcInput('8')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">8</button>
-                <button onclick="calcInput('9')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">9</button>
-                <button onclick="calcInput('+')" class="py-6 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">+</button>
+                <button onclick="calcInput('7')" class="py-6 bg-white rounded-2xl">7</button>
+                <button onclick="calcInput('8')" class="py-6 bg-white rounded-2xl">8</button>
+                <button onclick="calcInput('9')" class="py-6 bg-white rounded-2xl">9</button>
+                <button onclick="calcInput('+')" class="py-6 bg-amber-100 text-amber-600 rounded-2xl">+</button>
                 
-                <button onclick="calcInput('4')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">4</button>
-                <button onclick="calcInput('5')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">5</button>
-                <button onclick="calcInput('6')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">6</button>
-                <button onclick="calcInput('1')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">1</button>
-                <button onclick="calcInput('2')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">2</button>
-                <button onclick="calcInput('3')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">3</button>
-                <button onclick="calcInput('0')" class="py-6 bg-white dark:bg-zinc-800 col-span-2 rounded-2xl">0</button>
-                <button onclick="calcInput('.')" class="py-6 bg-white dark:bg-zinc-800 rounded-2xl">.</button>
+                <button onclick="calcInput('4')" class="py-6 bg-white rounded-2xl">4</button>
+                <button onclick="calcInput('5')" class="py-6 bg-white rounded-2xl">5</button>
+                <button onclick="calcInput('6')" class="py-6 bg-white rounded-2xl">6</button>
+                <button onclick="calcInput('1')" class="py-6 bg-white rounded-2xl">1</button>
+                <button onclick="calcInput('2')" class="py-6 bg-white rounded-2xl">2</button>
+                <button onclick="calcInput('3')" class="py-6 bg-white rounded-2xl">3</button>
+                <button onclick="calcInput('0')" class="py-6 bg-white col-span-2 rounded-2xl">0</button>
+                <button onclick="calcInput('.')" class="py-6 bg-white rounded-2xl">.</button>
                 <button onclick="calcEquals()" class="py-6 bg-blue-600 text-white rounded-2xl">=</button>
             </div>
         </div>
@@ -195,17 +191,8 @@
     <script>
         let transactions = JSON.parse(localStorage.getItem('flowtrack_data')) || [];
         let currentType = 'expense';
-        let isDark = localStorage.getItem('darkMode') === 'true';
         let pieChart = null;
         let weekChart = null;
-
-        function toggleTheme() {
-            isDark = !isDark;
-            localStorage.setItem('darkMode', isDark);
-            document.documentElement.classList.toggle('dark', isDark);
-            document.getElementById('theme-icon').classList.toggle('fa-moon', !isDark);
-            document.getElementById('theme-icon').classList.toggle('fa-sun', isDark);
-        }
 
         function saveData() {
             localStorage.setItem('flowtrack_data', JSON.stringify(transactions));
@@ -241,7 +228,7 @@
             sorted.forEach(t => {
                 const isInc = t.type === 'income';
                 const div = document.createElement('div');
-                div.className = `tx-card flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-5`;
+                div.className = `tx-card flex justify-between items-center bg-white border border-zinc-100 rounded-3xl px-5 py-5`;
                 div.innerHTML = `
                     <div class="flex gap-4 items-center">
                         <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
@@ -254,7 +241,7 @@
                     </div>
                     <div class="text-right">
                         <div class="${isInc ? 'amount-positive' : 'amount-negative'} font-semibold text-lg">
-                            \( {isInc ? '+' : '-'}₹ \){Number(t.amount).toFixed(2)}
+                            ${isInc ? '+' : '-'}₹${Number(t.amount).toFixed(2)}
                         </div>
                         <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-red-400 hover:text-red-600 text-xs mt-1">delete</button>
                     </div>
@@ -274,7 +261,7 @@
             sorted.forEach(t => {
                 const isInc = t.type === 'income';
                 const div = document.createElement('div');
-                div.className = `tx-card flex justify-between items-center bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-3xl px-5 py-5`;
+                div.className = `tx-card flex justify-between items-center bg-white border border-zinc-100 rounded-3xl px-5 py-5`;
                 div.innerHTML = `
                     <div class="flex gap-4 items-center flex-1">
                         <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">
@@ -287,7 +274,7 @@
                     </div>
                     <div class="text-right">
                         <div class="${isInc ? 'amount-positive' : 'amount-negative'} font-semibold text-lg">
-                            \( {isInc ? '+' : '-'}₹ \){Number(t.amount).toFixed(2)}
+                            ${isInc ? '+' : '-'}₹${Number(t.amount).toFixed(2)}
                         </div>
                         <button onclick="deleteTransaction(${t.id}); event.stopImmediatePropagation()" class="text-red-400 hover:text-red-600 text-xs mt-1">delete</button>
                     </div>
@@ -428,9 +415,6 @@
         function init() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date').value = today;
-            document.documentElement.classList.toggle('dark', isDark);
-            document.getElementById('theme-icon').classList.toggle('fa-moon', !isDark);
-            document.getElementById('theme-icon').classList.toggle('fa-sun', isDark);
             setType('expense');
             refreshAll();
             switchTab(0);
